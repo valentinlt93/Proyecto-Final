@@ -1,0 +1,486 @@
+/* =========================================================
+   Validador de tarjetas - estilos unificados
+   Incluye: Visa, American Express, Mastercard,
+            estado neutro / válido / error y medidas de seguridad.
+   El JS cambia data-brand en .card-container
+   (none | visa | amex | mastercard) y la clase del .status-box
+   (valid | invalid).
+   ========================================================= */
+
+:root {
+  --bg: #e9e9e9;
+  --text: #0f2346;
+  --muted: #64748b;
+  --form-bg: #efefef;
+  --field-bg: #f8f8f8;
+  --field-border: #c7c9cc;
+  --gold: #f0bb2e;
+
+  --success: #10b981;
+  --success-bg: #e6f4ea;
+  --success-text: #137333;
+  --error: #ef4444;
+  --error-bg: #fdecec;
+  --error-text: #b42318;
+
+  /* color de acento (botón, foco). Cambia según la marca */
+  --accent: #1f2a44;
+  --accent-dark: #141b2e;
+}
+
+/* ---------- Acento según la marca detectada ---------- */
+[data-brand="visa"]       { --accent: #0b2d7d; --accent-dark: #0a245d; }
+[data-brand="amex"]       { --accent: #006fcf; --accent-dark: #0056a3; }
+[data-brand="mastercard"] { --accent: #ff5f00; --accent-dark: #d94f00; }
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text);
+  padding: 20px;
+}
+
+.page {
+  width: 100%;
+  max-width: 980px;
+}
+
+.card-container {
+  width: 100%;
+  max-width: 590px;
+  margin: 0 auto;
+}
+
+/* =========================================================
+   TARJETA (base + una variante por marca)
+   ========================================================= */
+.card {
+  width: 100%;
+  background: linear-gradient(135deg, #3b4559 0%, #2a3344 50%, #1c2331 100%);
+  border-radius: 28px;
+  padding: 26px 30px 24px;
+  margin: 0 auto 28px;
+  box-shadow: 0 14px 26px rgba(10, 27, 64, 0.12);
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s ease;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: -15% -8% auto auto;
+  width: 210px;
+  height: 210px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  inset: auto auto -30% -8%;
+  width: 240px;
+  height: 240px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
+}
+
+/* Visa */
+[data-brand="visa"] .card {
+  background: linear-gradient(135deg, #09377d 0%, #0c3b8d 32%, #0d2a6b 100%);
+}
+
+/* American Express */
+[data-brand="amex"] .card {
+  background: linear-gradient(135deg, #1a86e0 0%, #006fcf 45%, #004a99 100%);
+}
+
+/* Mastercard */
+[data-brand="mastercard"] .card {
+  background: linear-gradient(135deg, #141d2b 0%, #0a0f18 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 70px;
+  position: relative;
+  z-index: 1;
+}
+
+.chip {
+  width: 62px;
+  height: 52px;
+  background: linear-gradient(145deg, #f2c95d, #d5a62d);
+  border-radius: 10px;
+  position: relative;
+  box-shadow: inset 0 0 0 1px rgba(92, 73, 11, 0.25);
+}
+
+.chip::before,
+.chip::after {
+  content: "";
+  position: absolute;
+  inset: 12px 0 12px 0;
+  border-left: 2px solid rgba(110, 85, 14, 0.35);
+  border-right: 2px solid rgba(110, 85, 14, 0.35);
+}
+
+.chip::after {
+  inset: 0 9px 0 9px;
+  border-top: 2px solid rgba(110, 85, 14, 0.35);
+  border-bottom: 2px solid rgba(110, 85, 14, 0.35);
+}
+
+/* ---------- Logos (solo se muestra el de la marca activa) ---------- */
+.brand-logo-wrap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  padding-right: 8px;
+}
+
+.brand-logo {
+  display: none;
+}
+
+[data-brand="visa"]       .logo-visa       { display: inline-block; }
+[data-brand="amex"]       .logo-amex       { display: inline-block; }
+[data-brand="mastercard"] .logo-mastercard { display: flex; }
+
+/* Logo Visa */
+.logo-visa {
+  position: relative;
+  color: #fff;
+  font-size: 42px;
+  letter-spacing: -4px;
+  line-height: 1;
+  font-weight: 900;
+  font-style: italic;
+  transform: scaleX(1.08);
+}
+
+.logo-visa::before {
+  content: "";
+  position: absolute;
+  width: 56px;
+  height: 48px;
+  left: -18px;
+  top: -8px;
+  background: var(--gold);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  z-index: 0;
+}
+
+.logo-visa span {
+  position: relative;
+  z-index: 1;
+}
+
+/* Logo American Express */
+.logo-amex {
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 13px;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Logo Mastercard */
+.logo-mastercard {
+  position: relative;
+  width: 60px;
+  height: 38px;
+}
+
+.logo-mastercard .circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  position: absolute;
+}
+
+.logo-mastercard .red {
+  background-color: #eb001b;
+  left: 0;
+}
+
+.logo-mastercard .yellow {
+  background-color: #ff5f00;
+  right: 0;
+  opacity: 0.9;
+}
+
+/* ---------- Número en la tarjeta ---------- */
+.card-number-display {
+  position: relative;
+  z-index: 1;
+  margin-top: 26px;
+  margin-bottom: 18px;
+  padding: 0 2px;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 24px;
+  letter-spacing: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 700;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.card-holder,
+.card-expires {
+  min-width: 0;
+}
+
+.card-bottom span {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 1.2px;
+  color: rgba(255, 255, 255, 0.74);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.card-bottom p {
+  font-size: 16px;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Tarjeta en estado de error ---------- */
+.card-container.has-error .card {
+  box-shadow: 0 0 0 3px var(--error), 0 14px 26px rgba(239, 68, 68, 0.25);
+  animation: sacudir 0.4s ease;
+}
+
+@keyframes sacudir {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-8px); }
+  40%      { transform: translateX(8px); }
+  60%      { transform: translateX(-5px); }
+  80%      { transform: translateX(5px); }
+}
+
+/* =========================================================
+   FORMULARIO
+   ========================================================= */
+.checkout-form {
+  background: var(--form-bg);
+  border-radius: 18px;
+  padding: 24px 18px 18px;
+  box-shadow: 0 8px 18px rgba(12, 36, 74, 0.08);
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 18px;
+  line-height: 1.3;
+  color: var(--text);
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.form-group input {
+  width: 100%;
+  height: 52px;
+  border: 2px solid var(--field-border);
+  border-radius: 10px;
+  background: var(--field-bg);
+  font-size: 18px;
+  letter-spacing: 1px;
+  color: var(--text);
+  padding: 0 16px;
+  outline: none;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input::placeholder {
+  color: #7b7f87;
+}
+
+.form-group input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 5px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+/* Campo en error */
+.form-group input.input-error {
+  border-color: var(--error);
+  background: var(--error-bg);
+}
+
+.btn-verify {
+  display: block;
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--accent) 0%, var(--accent-dark) 100%);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+  height: 62px;
+  cursor: pointer;
+  margin-top: 8px;
+  box-shadow: 0 10px 18px rgba(15, 44, 107, 0.12);
+  transition: filter 0.2s;
+}
+
+.btn-verify:hover {
+  filter: brightness(1.04);
+}
+
+.btn-verify:focus-visible {
+  outline: 3px solid var(--text);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   RESULTADO: neutro / válido / ERROR (viñeta)
+   ========================================================= */
+.status-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
+}
+
+.status-icon {
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #94a3b8;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.status-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.status-desc {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* Válido */
+.status-box.valid {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+
+.status-box.valid .status-icon {
+  background: var(--success);
+}
+
+.status-box.valid .status-title {
+  color: var(--success-text);
+}
+
+/* Error: formato propio, con borde lateral rojo y texto de alerta */
+.status-box.invalid {
+  border-color: var(--error);
+  border-left-width: 6px;
+  background: var(--error-bg);
+}
+
+.status-box.invalid .status-icon {
+  background: var(--error);
+}
+
+.status-box.invalid .status-title {
+  color: var(--error-text);
+}
+
+.status-box.invalid .status-desc {
+  color: var(--error-text);
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 560px) {
+  .card {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .logo-visa {
+    font-size: 28px;
+  }
+
+  .card-number-display {
+    font-size: 18px;
+    letter-spacing: 3px;
+  }
+
+  .form-group label {
+    font-size: 16px;
+  }
+
+  .btn-verify {
+    font-size: 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-container.has-error .card {
+    animation: none;
+  }
+}

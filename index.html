@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <title>Validador de tarjetas - Algoritmo de Luhn</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="page">
+
+    <!-- data-brand: none | visa | amex | mastercard (lo cambia el JS) -->
+    <div class="card-container" id="contenedor" data-brand="none">
+
+      <!-- Vista previa de la tarjeta (decorativa) -->
+      <div class="card" aria-hidden="true">
+        <div class="card-top">
+          <div class="chip"></div>
+          <div class="brand-logo-wrap">
+            <div class="brand-logo logo-visa"><span>VISA</span></div>
+            <div class="brand-logo logo-amex">American<br>Express</div>
+            <div class="brand-logo logo-mastercard">
+              <div class="circle red"></div>
+              <div class="circle yellow"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-number-display" id="numero-visual">•••• •••• •••• ••••</div>
+
+        <div class="card-bottom">
+          <div class="card-holder">
+            <span>TITULAR</span>
+            <p>Nombre Apellido</p>
+          </div>
+          <div class="card-expires">
+            <span>VENCE</span>
+            <p>MM/AA</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulario: sin action ni name, el número no se envía a ningún servidor -->
+      <form class="checkout-form" id="form-tarjeta" novalidate>
+        <div class="form-group">
+          <label for="numero-tarjeta">Número de tarjeta</label>
+          <input
+            type="text"
+            id="numero-tarjeta"
+            inputmode="numeric"
+            autocomplete="cc-number"
+            maxlength="19"
+            placeholder="Ingrese solo números"
+            spellcheck="false"
+            autocapitalize="off"
+            aria-describedby="estado-desc">
+        </div>
+
+        <button type="submit" class="btn-verify">Verificar tarjeta</button>
+
+        <!-- Resultado: el JS agrega la clase "valid" o "invalid" -->
+        <div class="status-box" id="estado" role="status" aria-live="polite">
+          <div class="status-icon" id="estado-icono">?</div>
+          <div>
+            <div class="status-title" id="estado-titulo">Esperando verificación</div>
+            <div class="status-desc" id="estado-desc">Ingrese un número y presione Verificar.</div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+  </main>
+
+  <script src="javascript.js"></script>
+</body>
+</html>
